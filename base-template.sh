@@ -112,7 +112,7 @@ execute_old_hook_if_available() {
 #   1 if the hooks fail, 0 otherwise
 #####################################################
 execute_global_shared_hooks() {
-    SHARED_HOOKS=$(git config --global --get githooks.shared)
+    SHARED_HOOKS=$(git config --global --includes --get githooks.shared)
 
     if [ -n "$SHARED_HOOKS" ]; then
         process_shared_hooks "$SHARED_HOOKS" "$@" || return 1
@@ -250,7 +250,7 @@ check_and_execute_hook() {
 #####################################################
 is_trusted_repo() {
     if [ -f ".githooks/trust-all" ]; then
-        TRUST_ALL_CONFIG=$(git config --local --get githooks.trust.all)
+        TRUST_ALL_CONFIG=$(git config --local --includes --get githooks.trust.all)
         TRUST_ALL_RESULT=$?
 
         # shellcheck disable=SC2181
@@ -464,7 +464,7 @@ check_for_updates_if_needed() {
 #   None
 #####################################################
 read_last_update_time() {
-    LAST_UPDATE=$(git config --global --get githooks.autoupdate.lastrun)
+    LAST_UPDATE=$(git config --global --includes --get githooks.autoupdate.lastrun)
     if [ -z "$LAST_UPDATE" ]; then
         LAST_UPDATE=0
     fi
@@ -478,7 +478,7 @@ read_last_update_time() {
 #   None
 #####################################################
 record_update_time() {
-    git config --global githooks.autoupdate.lastrun "$(date +%s)"
+    git config --global --includes githooks.autoupdate.lastrun "$(date +%s)"
 }
 
 #####################################################
@@ -572,7 +572,7 @@ is_update_available() {
 #   None
 #####################################################
 read_single_repo_information() {
-    IS_SINGLE_REPO=$(git config --get --local githooks.single.install)
+    IS_SINGLE_REPO=$(git config --get --local --includes githooks.single.install)
 }
 
 #####################################################

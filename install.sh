@@ -131,7 +131,7 @@ execute_old_hook_if_available() {
 #   1 if the hooks fail, 0 otherwise
 #####################################################
 execute_global_shared_hooks() {
-    SHARED_HOOKS=$(git config --global --get githooks.shared)
+    SHARED_HOOKS=$(git config --global --includes --get githooks.shared)
 
     if [ -n "$SHARED_HOOKS" ]; then
         process_shared_hooks "$SHARED_HOOKS" "$@" || return 1
@@ -269,7 +269,7 @@ check_and_execute_hook() {
 #####################################################
 is_trusted_repo() {
     if [ -f ".githooks/trust-all" ]; then
-        TRUST_ALL_CONFIG=$(git config --local --get githooks.trust.all)
+        TRUST_ALL_CONFIG=$(git config --local --includes --get githooks.trust.all)
         TRUST_ALL_RESULT=$?
 
         # shellcheck disable=SC2181
@@ -483,7 +483,7 @@ check_for_updates_if_needed() {
 #   None
 #####################################################
 read_last_update_time() {
-    LAST_UPDATE=$(git config --global --get githooks.autoupdate.lastrun)
+    LAST_UPDATE=$(git config --global --includes --get githooks.autoupdate.lastrun)
     if [ -z "$LAST_UPDATE" ]; then
         LAST_UPDATE=0
     fi
@@ -497,7 +497,7 @@ read_last_update_time() {
 #   None
 #####################################################
 record_update_time() {
-    git config --global githooks.autoupdate.lastrun "$(date +%s)"
+    git config --global --includes githooks.autoupdate.lastrun "$(date +%s)"
 }
 
 #####################################################
@@ -591,7 +591,7 @@ is_update_available() {
 #   None
 #####################################################
 read_single_repo_information() {
-    IS_SINGLE_REPO=$(git config --get --local githooks.single.install)
+    IS_SINGLE_REPO=$(git config --get --local --includes githooks.single.install)
 }
 
 #####################################################
@@ -671,7 +671,7 @@ CLI_TOOL_CONTENT='#!/bin/sh
 #   Githooks configuration, hook files and other
 #   related functionality.
 # This script should be an alias for `git hooks`, done by
-#   git config --global alias.hooks "!${SCRIPT_DIR}/githooks"
+#   git config --global --includes alias.hooks "!${SCRIPT_DIR}/githooks"
 #
 # See the documentation in the project README for more information,
 #   or run the `git hooks help` command for available options.
@@ -1047,7 +1047,7 @@ git hooks trust [forget]
     fi
 
     if [ "$1" = "forget" ]; then
-        if [ -z "$(git config --local --get githooks.trust.all)" ]; then
+        if [ -z "$(git config --local --includes --get githooks.trust.all)" ]; then
             echo "The current repository does not have trust settings."
             return
         elif git config --unset githooks.trust.all; then
@@ -1135,7 +1135,7 @@ git hooks list [type]
         fi
 
         # global shared hooks
-        SHARED_REPOS_LIST=$(git config --global --get githooks.shared)
+        SHARED_REPOS_LIST=$(git config --global --includes --get githooks.shared)
         for SHARED_ITEM in $(list_hooks_in_shared_repos "$LIST_TYPE"); do
             if [ -d "$SHARED_ITEM" ]; then
                 for LIST_ITEM in "$SHARED_ITEM"/*; do
@@ -1285,7 +1285,7 @@ is_file_ignored() {
 #####################################################
 is_trusted_repo() {
     if [ -f ".githooks/trust-all" ]; then
-        TRUST_ALL_CONFIG=$(git config --local --get githooks.trust.all)
+        TRUST_ALL_CONFIG=$(git config --local --includes --get githooks.trust.all)
         TRUST_ALL_RESULT=$?
 
         # shellcheck disable=SC2181
@@ -1468,7 +1468,7 @@ add_shared_hook_repo() {
     fi
 
     if [ -n "$SET_SHARED_GLOBAL" ]; then
-        CURRENT_LIST=$(git config --global --get githooks.shared)
+        CURRENT_LIST=$(git config --global --includes --get githooks.shared)
 
         if [ -n "$CURRENT_LIST" ]; then
             NEW_LIST="${CURRENT_LIST},${SHARED_REPO_URL}"
@@ -1476,7 +1476,7 @@ add_shared_hook_repo() {
             NEW_LIST="$SHARED_REPO_URL"
         fi
 
-        git config --global githooks.shared "$NEW_LIST" &&
+        git config --global --includes githooks.shared "$NEW_LIST" &&
             echo "The new shared hook repository is successfully added" &&
             return
 
@@ -1534,7 +1534,7 @@ remove_shared_hook_repo() {
     fi
 
     if [ -n "$SET_SHARED_GLOBAL" ]; then
-        CURRENT_LIST=$(git config --global --get githooks.shared)
+        CURRENT_LIST=$(git config --global --includes --get githooks.shared)
         NEW_LIST=""
 
         IFS=",
@@ -1558,7 +1558,7 @@ remove_shared_hook_repo() {
             clear_shared_hook_repos "--global" && return || exit 1
         fi
 
-        git config --global githooks.shared "$NEW_LIST" &&
+        git config --global --includes githooks.shared "$NEW_LIST" &&
             echo "The list of shared hook repositories is successfully changed" &&
             return
 
@@ -1635,8 +1635,8 @@ clear_shared_hook_repos() {
         ;;
     esac
 
-    if [ -n "$CLEAR_GLOBAL_REPOS" ] && [ -n "$(git config --global --get githooks.shared)" ]; then
-        git config --global --unset githooks.shared &&
+    if [ -n "$CLEAR_GLOBAL_REPOS" ] && [ -n "$(git config --global --includes --get githooks.shared)" ]; then
+        git config --global --includes --unset githooks.shared &&
             echo "Global shared hook repository list cleared" ||
             CLEAR_REPOS_FAILED=1
     fi
@@ -1690,10 +1690,10 @@ list_shared_hook_repos() {
     if [ -n "$LIST_GLOBAL" ]; then
         echo "Global shared hook repositories:"
 
-        if [ -z "$(git config --global --get githooks.shared)" ]; then
+        if [ -z "$(git config --global --includes --get githooks.shared)" ]; then
             echo "  - None"
         else
-            for LIST_ITEM in $(git config --global --get githooks.shared); do
+            for LIST_ITEM in $(git config --global --includes --get githooks.shared); do
                 NORMALIZED_NAME=$(echo "$LIST_ITEM" |
                     sed -E "s#.*[:/](.+/.+)\\.git#\\1#" |
                     sed -E "s/[^a-zA-Z0-9]/_/g")
@@ -1778,7 +1778,7 @@ git hooks pull
         return
     fi
 
-    SHARED_HOOKS=$(git config --global --get githooks.shared)
+    SHARED_HOOKS=$(git config --global --includes --get githooks.shared)
     if [ -n "$SHARED_HOOKS" ]; then
         update_shared_hooks_in "$SHARED_HOOKS"
     fi
@@ -1904,14 +1904,14 @@ git hooks update [enable|disable]
     fi
 
     if [ "$1" = "enable" ]; then
-        git config --global githooks.autoupdate.enabled Y &&
+        git config --global --includes githooks.autoupdate.enabled Y &&
             echo "Automatic update checks have been enabled" &&
             return
 
         echo "! Failed to enable automatic updates" && exit 1
 
     elif [ "$1" = "disable" ]; then
-        git config --global githooks.autoupdate.enabled N &&
+        git config --global --includes githooks.autoupdate.enabled N &&
             echo "Automatic update checks have been disabled" &&
             return
 
@@ -1958,7 +1958,7 @@ git hooks update [enable|disable]
 #   None
 #####################################################
 record_update_time() {
-    git config --global githooks.autoupdate.lastrun "$(date +%s)"
+    git config --global --includes githooks.autoupdate.lastrun "$(date +%s)"
 }
 
 #####################################################
@@ -2027,7 +2027,7 @@ is_update_available() {
 #   None
 #####################################################
 read_single_repo_information() {
-    IS_SINGLE_REPO=$(git config --get --local githooks.single.install)
+    IS_SINGLE_REPO=$(git config --get --local --includes githooks.single.install)
 }
 
 #####################################################
@@ -2426,11 +2426,11 @@ config_search_dir() {
             exit 1
         fi
 
-        git config --global githooks.previous.searchdir "$2"
+        git config --global --includes githooks.previous.searchdir "$2"
     elif [ "$1" = "reset" ]; then
-        git config --global --unset githooks.previous.searchdir
+        git config --global --includes --unset githooks.previous.searchdir
     elif [ "$1" = "print" ]; then
-        CONFIG_SEARCH_DIR=$(git config --global --get githooks.previous.searchdir)
+        CONFIG_SEARCH_DIR=$(git config --global --includes --get githooks.previous.searchdir)
         if [ -z "$CONFIG_SEARCH_DIR" ]; then
             echo "No previous search directory is set"
         else
@@ -2466,9 +2466,9 @@ config_global_shared_hook_repos() {
             fi
         done
 
-        git config --global githooks.shared "$NEW_LIST"
+        git config --global --includes githooks.shared "$NEW_LIST"
     elif [ "$1" = "reset" ]; then
-        git config --global --unset githooks.shared
+        git config --global --includes --unset githooks.shared
     elif [ "$1" = "print" ]; then
         list_shared_hook_repos "--global"
     else
@@ -2496,7 +2496,7 @@ config_trust_all_hooks() {
     elif [ "$1" = "reset" ]; then
         git config --unset githooks.trust.all
     elif [ "$1" = "print" ]; then
-        CONFIG_TRUST_ALL=$(git config --local --get githooks.trust.all)
+        CONFIG_TRUST_ALL=$(git config --local --includes --get githooks.trust.all)
         if [ "$CONFIG_TRUST_ALL" = "Y" ]; then
             echo "The current repository trusts all hooks automatically"
         elif [ -z "$CONFIG_TRUST_ALL" ]; then
@@ -2518,11 +2518,11 @@ config_trust_all_hooks() {
 #####################################################
 config_update_state() {
     if [ "$1" = "enable" ]; then
-        git config --global githooks.autoupdate.enabled Y
+        git config --global --includes githooks.autoupdate.enabled Y
     elif [ "$1" = "disable" ]; then
-        git config --global githooks.autoupdate.enabled N
+        git config --global --includes githooks.autoupdate.enabled N
     elif [ "$1" = "reset" ]; then
-        git config --global --unset githooks.autoupdate.enabled
+        git config --global --includes --unset githooks.autoupdate.enabled
     elif [ "$1" = "print" ]; then
         CONFIG_UPDATE_ENABLED=$(git config --get githooks.autoupdate.enabled)
         if [ "$CONFIG_UPDATE_ENABLED" = "Y" ]; then
@@ -2544,9 +2544,9 @@ config_update_state() {
 #####################################################
 config_update_last_run() {
     if [ "$1" = "reset" ]; then
-        git config --global --unset githooks.autoupdate.lastrun
+        git config --global --includes --unset githooks.autoupdate.lastrun
     elif [ "$1" = "print" ]; then
-        LAST_UPDATE=$(git config --global --get githooks.autoupdate.lastrun)
+        LAST_UPDATE=$(git config --global --includes --get githooks.autoupdate.lastrun)
         if [ -z "$LAST_UPDATE" ]; then
             echo "The update has never run"
         else
@@ -2898,7 +2898,7 @@ find_git_hook_templates() {
 
             if [ "$MARK_AS_TEMPLATES" = "y" ] || [ "$MARK_AS_TEMPLATES" = "Y" ]; then
                 TEMPLATE_DIR=$(dirname "$TARGET_TEMPLATE_DIR")
-                if ! git config --global init.templateDir "$TEMPLATE_DIR"; then
+                if ! git config --global --includes init.templateDir "$TEMPLATE_DIR"; then
                     echo "! Failed to set it up as Git template directory"
                 fi
             fi
@@ -3028,7 +3028,7 @@ setup_new_templates_folder() {
     if ! is_dry_run; then
         if mkdir -p "${TILDE_REPLACED}/hooks"; then
             # Let this one go with or without a tilde
-            git config --global init.templateDir "$USER_TEMPLATES"
+            git config --global --includes init.templateDir "$USER_TEMPLATES"
         else
             echo "! Failed to set up the new Git templates folder"
             return
@@ -3087,7 +3087,7 @@ install_command_line_tool() {
     mkdir -p "$HOME/.githooks/bin" &&
         echo "$CLI_TOOL_CONTENT" >"$HOME/.githooks/bin/githooks" &&
         chmod +x "$HOME/.githooks/bin/githooks" &&
-        git config --global alias.hooks '!~/.githooks/bin/githooks' &&
+        git config --global --includes alias.hooks '!~/.githooks/bin/githooks' &&
         echo "The command line helper tool is installed at ${HOME}/.githooks/bin/githooks, and it is now available as 'git hooks <cmd>'" &&
         return
 
@@ -3133,7 +3133,7 @@ setup_automatic_update_checks() {
 
     if [ -z "$DO_AUTO_UPDATES" ] || [ "$DO_AUTO_UPDATES" = "y" ] || [ "$DO_AUTO_UPDATES" = "Y" ]; then
         if ! is_single_repo_install; then
-            GLOBAL_CONFIG="--global"
+            GLOBAL_CONFIG="--global --includes"
         fi
 
         if is_dry_run; then
@@ -3157,7 +3157,7 @@ setup_automatic_update_checks() {
 #   None
 ############################################################
 install_into_existing_repositories() {
-    PRE_START_DIR=$(git config --global --get githooks.previous.searchdir)
+    PRE_START_DIR=$(git config --global --includes --get githooks.previous.searchdir)
     # shellcheck disable=SC2181
     if [ $? -eq 0 ] && [ -n "$PRE_START_DIR" ]; then
         HAS_PRE_START_DIR="Y"
@@ -3205,7 +3205,7 @@ install_into_existing_repositories() {
         return
     fi
 
-    git config --global githooks.previous.searchdir "$RAW_START_DIR"
+    git config --global --includes githooks.previous.searchdir "$RAW_START_DIR"
 
     LOCAL_REPOSITORY_LIST=$(find "$START_DIR" -type d -name .git 2>/dev/null)
 
@@ -3329,7 +3329,7 @@ install_hooks_into_repo() {
 #   None
 ############################################################
 setup_shared_hook_repositories() {
-    if [ -n "$(git config --global --get githooks.shared)" ]; then
+    if [ -n "$(git config --global --includes --get githooks.shared)" ]; then
         printf "Looks like you already have shared hook repositories setup, do you want to change them now? [y/N] "
     else
         echo "You can set up shared hook repositories to avoid duplicating common hooks across repositories you work on. See information on what are these in the project's documentation at https://github.com/rycus86/githooks#shared-hook-repositories"
@@ -3355,10 +3355,10 @@ setup_shared_hook_repositories() {
         fi
     done
 
-    if [ -z "$SHARED_REPOS_LIST" ] && git config --global --unset githooks.shared; then
+    if [ -z "$SHARED_REPOS_LIST" ] && git config --global --includes --unset githooks.shared; then
         echo "Shared hook repositories are now unset. If you want to set them up again in the future, run this script again, or change the 'githooks.shared' Git config variable manually."
         echo "Note: shared hook repos listed in the .githooks/.shared file will still be executed"
-    elif git config --global githooks.shared "$SHARED_REPOS_LIST"; then
+    elif git config --global --includes githooks.shared "$SHARED_REPOS_LIST"; then
         # Trigger the shared hook repository checkout manually
         echo "$BASE_TEMPLATE_CONTENT" >".githooks.shared.trigger" &&
             chmod +x ".githooks.shared.trigger" &&
