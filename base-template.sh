@@ -513,7 +513,7 @@ should_run_update_checks() {
 #   1 if failed the load the script, 0 otherwise
 #####################################################
 fetch_latest_update_script() {
-    DOWNLOAD_URL="https://raw.githubusercontent.com/rycus86/githooks/master/install.sh"
+    DOWNLOAD_URL="https://raw.githubusercontent.com/cscutcher/githooks/master/install.sh"
 
     echo "^ Checking for updates ..."
 

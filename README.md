@@ -178,7 +178,7 @@ You can change this setting later with the [command line helper](https://github.
 Finally, if you trust GitHub URLs more, use the command below that skips the redirect from `r.viktoradam.net`. Also, some corporate proxies are not in favour of my Cloudflare certificates for some reason, so you might have a better chance with GitHub links in this case.
 
 ```shell
-$ sh -c "$(curl -fsSL https://raw.githubusercontent.com/rycus86/githooks/master/install.sh)"
+$ sh -c "$(curl -fsSL https://raw.githubusercontent.com/cscutcher/githooks/master/install.sh)"
 ```
 
 The GitHub URL also accepts the additional parameters mentioned above, the `https://r.viktoradam.net/githooks` URL is just a redirect to the longer GitHub address.
@@ -216,7 +216,7 @@ You can also check for updates at any time by executing `git hooks update`, usin
 If you want to get rid of these hooks and templates, you can execute the `uninstall.sh` script similarly to the install scripts.
 
 ```shell
-$ sh -c "$(curl -fsSL https://raw.githubusercontent.com/rycus86/githooks/master/uninstall.sh)"
+$ sh -c "$(curl -fsSL https://raw.githubusercontent.com/cscutcher/githooks/master/uninstall.sh)"
 ```
 
 This will delete the template files, optionally the installed hooks from the existing local repositories, and reinstates any previous hooks that were moved during the installation.
