@@ -532,7 +532,7 @@ should_run_update_checks() {
 #   1 if failed the load the script, 0 otherwise
 #####################################################
 fetch_latest_update_script() {
-    DOWNLOAD_URL="https://raw.githubusercontent.com/rycus86/githooks/master/install.sh"
+    DOWNLOAD_URL="https://raw.githubusercontent.com/cscutcher/githooks/master/install.sh"
 
     echo "^ Checking for updates ..."
 
@@ -1971,7 +1971,7 @@ record_update_time() {
 #   1 if failed the load the script, 0 otherwise
 #####################################################
 fetch_latest_install_script() {
-    DOWNLOAD_URL="https://raw.githubusercontent.com/rycus86/githooks/master/install.sh"
+    DOWNLOAD_URL="https://raw.githubusercontent.com/cscutcher/githooks/master/install.sh"
 
     if curl --version >/dev/null 2>&1; then
         INSTALL_SCRIPT=$(curl -fsSL "$DOWNLOAD_URL" 2>/dev/null)
@@ -2139,7 +2139,7 @@ git hooks readme [add|update]
 #   1 if failed the load the contents, 0 otherwise
 #####################################################
 fetch_latest_readme() {
-    DOWNLOAD_URL="https://raw.githubusercontent.com/rycus86/githooks/master/.githooks/README.md"
+    DOWNLOAD_URL="https://raw.githubusercontent.com/cscutcher/githooks/master/.githooks/README.md"
 
     if curl --version >/dev/null 2>&1; then
         README_CONTENTS=$(curl -fsSL "$DOWNLOAD_URL" 2>/dev/null)
@@ -3092,7 +3092,7 @@ install_command_line_tool() {
         return
 
     echo "Failed to setup the command line helper automatically. If you'd like to do it manually, install the 'cli.sh' file from the repository into a folder on your PATH environment variable, and make it executable."
-    echo "Direct link to the script: https://raw.githubusercontent.com/rycus86/githooks/master/cli.sh"
+    echo "Direct link to the script: https://raw.githubusercontent.com/cscutcher/githooks/master/cli.sh"
 }
 
 ############################################################
